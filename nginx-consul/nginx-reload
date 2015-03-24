@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# As of nginx ~1.2 bad config changes will not bring down the server during a reloads.
+# This could still pose a problem for restarting the container though.
+
+kill -HUP $(cat /var/run/nginx.pid)
