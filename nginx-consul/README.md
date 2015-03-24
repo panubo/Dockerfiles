@@ -5,6 +5,7 @@ This image run an Nginx server and consul-template to configure it.
 Place you consul-template config files into /consul-template/config/ and templates into /consul-template/templates/
 
 A config file should look like
+
 ```
 template {
   source = "/consul-template/templates/test.tmpl"

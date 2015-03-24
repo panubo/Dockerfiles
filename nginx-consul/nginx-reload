@@ -33,7 +33,7 @@ do_reload() {
 
   rm -rf /etc/nginx/conf.d
   cp -af /consul-template/output /etc/nginx/conf.d
-  if [ nginx -tq ]
+  if nginx -tq
   then
     echo "Reloading."
     kill -HUP $(cat /var/run/nginx.pid)
