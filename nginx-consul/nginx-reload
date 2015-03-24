@@ -1,6 +1,72 @@
 #!/bin/sh
 
-# As of nginx ~1.2 bad config changes will not bring down the server during a reloads.
+# As of nginx ~1.2 bad config changes will not bring down the server during a
+# reloads.
 # This could still pose a problem for restarting the container though.
+#
+# This script implements the following functionality
+# A lock so only one copy can be running
+# Keeps a copy of the previous working config in /etc/nginx/config.d-working
+# Some basic rate limiting so nginx is not continually reloaded
+#
+# Rate Limiting
+# Each time this script is called the nginx-reload.rate file is updated to the
+# time in milliseconds. If the rate file is updated before the reload finishes
+# the script will sleep for 5 seconds then reload again. After which it will
+# check the rate file again and loop.
 
-kill -HUP $(cat /var/run/nginx.pid)
+date +%s%N > /var/run/nginx-reload.rate
+
+lock_failed() {
+  # Runs if lock can not be obtained.
+  echo "Failed to obtain lock."
+
+  # This function must always exit. Consut-template likes zero exit.
+  exit 0
+
+}
+
+do_reload() {
+  # Copies in new config, tests and reloads.
+  rm -rf /etc/nginx/config.d-working
+  cp -af /etc/nginx/conf.d /etc/nginx/conf.d-working
+
+  rm -rf /etc/nginx/conf.d
+  cp -af /consul-template/output /etc/nginx/conf.d
+  if [ nginx -tq ]
+  then
+    echo "Reloading."
+    kill -HUP $(cat /var/run/nginx.pid)
+  else
+    echo "Changes failed, reverting."
+    rm -rf /etc/nginx/conf.d
+    cp -af /etc/nginx/conf.d-working /etc/nginx/conf.d
+  fi
+  sleep 1
+
+}
+
+run() {
+  # Reloads nginx on first run. Then checks for more recent changes.
+  stored_rate="`date +%s%N`"
+  do_reload
+  # Check if there are newer changes.
+  while [ "$stored_rate" -lt "$(cat /var/run/nginx-reload.rate)" ]
+  do
+    echo "More changes to come. Rate limting by sleeping 5sec."
+    sleep 5
+    stored_rate="`date +%s%N`"
+    do_reload
+  done
+
+
+}
+
+# Locking code, runs run() when it has lock otherwise runs lock_failed
+(
+  # Wait for lock on /var/run/nginx-reload.lock (fd 200) for 10 seconds
+  flock -x -w 0 200 || lock_failed
+
+  run
+
+) 200>/var/run/nginx-reload.lock
