@@ -1,4 +1,6 @@
 #!/bin/sh
 
+# Sleep 3sec to allow nignx to start before changing the config again
+
 sleep 3
 exec consul-template -config=/consul-template/config

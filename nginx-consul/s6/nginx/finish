@@ -1,3 +1,4 @@
 #!/bin/sh
 
+# Shutdown everything and exit if nginx crashes or is stopped.
 s6-svscanctl -t /etc/s6

@@ -14,9 +14,9 @@ template {
 }
 ```
 
-nginx-reload.sh saftly reloads nginx so that bad config files do not bring down the server.
+nginx-reload safely reloads nginx so that bad config changes are reverted and applies some rate limiting to reloads.
 
-If your completly overwriting the /consul-template/templates directory you should include the following config file.
+If you are completly overwriting the /consul-template/templates directory you should include the following config file.
 
 ```
 # file: /consul-template/config/00-consul.conf
