@@ -1,0 +1,25 @@
+timeout=90
+TZ=Australia/Sydney
+
+phpopts_short_open_tag=off
+phpopts_post_max_size=32M
+phpopts_upload_max_filezie=32M
+phpopts_memory_limit=200M
+
+php_cache=apc
+php_apc_shm_size=128M
+php_apc_stat=0
+php_opcache_memory_consumption=128
+php_opcache_revalidate_freq=2
+
+php_session_save_handler=redis
+php_session_save_path=tcp://host1:6379?weight=1, tcp://host2:6379?weight=2&timeout=2.5, tcp://host3:6379?weight=2
+
+phpfpm_pm_max_children=5
+phpfpm_pm_max_requests=1000
+
+msmtp_from=noreply@panubo.com
+
+MYSQL_DB_NAME=test
+MYSQL_DB_USER=test
+MYSQL_DB_PASS=test
