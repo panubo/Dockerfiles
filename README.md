@@ -1,5 +1,5 @@
-## Volt Grid Dockerfiles
+## Panubo Dockerfiles
 
-Collection of Dockerfile by Volt Grid. 
+Collection of Dockerfiles by Panubo. 
 
-Find them on the Docker registry at https://hub.docker.com/u/voltgrid/
+Find them on the Docker registry at https://hub.docker.com/u/panubo/
