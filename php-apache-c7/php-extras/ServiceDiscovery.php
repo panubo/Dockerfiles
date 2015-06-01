@@ -10,6 +10,8 @@ class ServiceDiscovery {
 
 	function __construct($etcd_base = "/v2/keys/services/mysql") {
 
+		$this->etcd_base = $etcd_base;
+
 		/* See if values are already cached with apc */
 		$this->host = apc_fetch("mysql_host");
 		$this->port = apc_fetch("mysql_port");
