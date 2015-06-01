@@ -35,7 +35,8 @@ RUN \
   sed -i 's/^Listen.*/Listen 8000/g' /etc/httpd/conf/httpd.conf
 
 RUN curl -L https://github.com/voltgrid/voltgrid-pie/archive/v1.tar.gz | tar -C /usr/local/bin --strip-components 1 -zxf - voltgrid-pie-1/voltgrid.py && \
-  curl -L https://github.com/just-containers/skaware/releases/download/v1.10.0/s6-2.1.3.0-linux-amd64-bin.tar.gz | tar -C / -zxf -
+  curl -L https://github.com/just-containers/skaware/releases/download/v1.10.0/s6-2.1.3.0-linux-amd64-bin.tar.gz | tar -C / -zxf - && \
+  pear install HTTP_Request2
 
 COPY conf.modules.d /etc/httpd/conf.modules.d
 COPY conf.d /etc/httpd/conf.d
@@ -44,6 +45,7 @@ COPY msmtprc /etc/msmtprc
 COPY php-fpm.conf /etc/php-fpm.d/www.conf
 COPY voltgrid.conf /usr/local/etc/voltgrid.conf
 COPY s6 /etc/s6/
+COPY php-extras /usr/share/php/
 
 ENV TMPDIR /var/tmp
 ENTRYPOINT ["/usr/local/bin/voltgrid.py"]
