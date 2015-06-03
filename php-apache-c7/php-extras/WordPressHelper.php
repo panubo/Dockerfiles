@@ -9,16 +9,23 @@ class WordPressHelper {
 	
 	function __construct() {
 
-		require_once('ServiceDiscovery.php');
-
-		$sd = new ServiceDiscovery();
-		$this->db_host = $sd->host . ":" . $sd->port;
+		/* if ETCDCTL_PEERS is defined assume we are using dynamic service
+		   discovery */
+		if (getenv("ETCDCTL_PEERS")) {
+			require_once('ServiceDiscovery.php');
+			$sd = new ServiceDiscovery();
+			$this->db_host = $sd->services[0]["nodes"][0]["host"] . ":" . $sd->services[0]["nodes"][0]["port"];
+		} elseif (getenv("DB_HOST")) {
+			$this->db_host = getenv("DB_HOST");
+		}
 
 	}
 
 	function run() {
 
-		define('DB_HOST', $this->db_host);
+		if ($this->db_host) {
+			define('DB_HOST', $this->db_host);
+		}
 
 		foreach ($this->env_keys as $key) {
 			$this->define_from_env($key);

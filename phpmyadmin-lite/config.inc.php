@@ -30,16 +30,16 @@ require_once('ServiceDiscovery.php');
 
 $sd = new ServiceDiscovery();
 
-foreach ($sd->services as $name => $servers) {
+foreach ($sd->services as $service) {
 	$i++;
 
 	/* Authentication type */
 	$cfg['Servers'][$i]['auth_type'] = 'cookie';
 
 	/* Server parameters */
-	$cfg['Servers'][$i]['host'] = $servers[0]["host"];
-	$cfg['Servers'][$i]['port'] = $servers[0]["port"];
-	$cfg['Servers'][$i]['verbose'] = $name;
+	$cfg['Servers'][$i]['host'] = $service["nodes"][0]["host"];
+	$cfg['Servers'][$i]['port'] = $service["nodes"][0]["port"];
+	$cfg['Servers'][$i]['verbose'] = $service["name"];
 	$cfg['Servers'][$i]['connect_type'] = 'tcp';
 	$cfg['Servers'][$i]['compress'] = false;
 	$cfg['Servers'][$i]['AllowNoPassword'] = false;

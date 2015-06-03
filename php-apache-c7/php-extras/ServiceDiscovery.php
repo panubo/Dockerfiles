@@ -1,48 +1,75 @@
 <?php
 class ServiceDiscovery {
 
-	/* Currently only support for etcd or an environment variable */
+	/* Currently only support for etcd */
 
-	public $host;
-	public $port;
+	public $services;
 
+	private $service_name;
+	private $service_list;
 	private $etcd_base;
 
-	function __construct($etcd_base = "/v2/keys/services/mysql") {
+	function __construct($service_name = NULL, $etcd_base = "/services") {
 
+		$this->services = apc_fetch("sd_services");
+		if ($this->services !== false) {
+			return;
+		}
+
+		error_log("Fetching services from etcd");
+
+		/* Allow specifying of service_name directly or via ENV before falling back to "mysql" */
+		if ($service_name == NULL) {
+			$this->service_name = (getenv("SD_SERVICE_NAME")) ? getenv("SD_SERVICE_NAME") : "mysql";
+		} else {
+			$this->service_name = $service_name;
+		}
+
+		/* Base URL for etcd requests */
 		$this->etcd_base = $etcd_base;
 
-		/* See if values are already cached with apc */
-		$this->host = apc_fetch("mysql_host");
-		$this->port = apc_fetch("mysql_port");
-		if ($this->host && $this->port) {
-			return;
+		/* Get the service list */
+		$this->get_service_list();
+
+		/* Start getting some hosts */
+		foreach ($this->service_list as $service) {
+			$etcd_result = $this->etcd_get($service, "");
+			if ($etcd_result->node->nodes) {
+				foreach ($etcd_result->node->nodes as $node) {
+					$value = explode(":", $node->value);
+					$service_results[] = array("id" => basename($node->key), "host" => $value[0], "port" => $value[1]);
+				}
+				$this->services[] = array("name" => basename($service), "nodes" => $service_results);
+			}
 		}
 
-		/* Check for ETCDCTL_PEERS environment variable */
-		$etcd_peers = getenv("ETCDCTL_PEERS");
-		if ($etcd_peers) {
+		/* Save the services to apc */
+		apc_add("sd_services", $this->services, 10);
+	}
 
-			$url = explode(",", getenv("ETCDCTL_PEERS"))[0].$this->etcd_base;
+	function get_service_list() {
+		/* Find the path to the service incase we want to match multiple services */
+		$search = trim(dirname($this->service_name), ". \t\n\r\0\x0B");
+		$result = $this->etcd_get($search);
 
-			require_once 'HTTP/Request2.php';
-
-			$request = new HTTP_Request2($url, HTTP_Request2::METHOD_GET);
-			$res = $request->send();
-
-			$content = json_decode($res->getBody());
-			$this->host = explode(":", $content->node->nodes[0]->value)[0];
-			$this->port = explode(":", $content->node->nodes[0]->value)[1];
-			apc_add("mysql_host", $this->host, 10);
-			apc_add("mysql_port", $this->port, 10);
-
-			return;
+		/* Find the services that match the service_name patten */
+		foreach ($result->node->nodes as $item) {
+			if (fnmatch($this->etcd_base."/".$this->service_name, $item->key)) {
+				$this->service_list[] = $item->key;
+			}
 		}
+		sort($this->service_list);
+	}
 
-		/* Finally fall back to environment variables and defaults */
-		$this->host = (getenv("MYSQL_HOST")) ? getenv("MYSQL_HOST") : "localhost";
-		$this->port = (getenv("MYSQL_PORT")) ? getenv("MYSQL_PORT") : "3306";
+	private function etcd_get($url, $base = false) {
+		$base = ($base===false) ? $this->etcd_base : $base;
+		/* Get some key from etcd */
+		$etcd_url = explode(",", getenv("ETCDCTL_PEERS"))[0]."/v2/keys".$base.$url;
+		require_once('HTTP/Request2.php');
+		$request = new HTTP_Request2($etcd_url, HTTP_Request2::METHOD_GET);
+		$res = $request->send();
 
+		return json_decode($res->getBody());
 	}
 
 }
