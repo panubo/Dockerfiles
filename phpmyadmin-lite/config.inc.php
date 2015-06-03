@@ -26,67 +26,40 @@ $cfg['PmaAbsoluteUri'] = $_SERVER["HTTP_X_FORWARDED_PROTO"]."://".$_SERVER["HTTP
  */
 $i = 0;
 
-/*
- * First server
- */
-$i++;
-/* Authentication type */
-$cfg['Servers'][$i]['auth_type'] = 'cookie';
-
-class ServiceDiscovery {
-
-	/* Currently only support for etcd or an environment variable */
-
-	public $host;
-	public $port;
-
-	private $etcd_base = "/v2/keys/services/mysql";
-
-	function __construct() {
-
-		/* See if values are already cached with apc */
-		$this->host = apc_fetch("mysql_host");
-		$this->port = apc_fetch("mysql_port");
-		if ($this->host && $this->port) {
-			return;
-		}
-
-		/* Check for ETCDCTL_PEERS environment variable */
-		$etcd_peers = getenv("ETCDCTL_PEERS");
-		if ($etcd_peers) {
-
-			$url = explode(",", getenv("ETCDCTL_PEERS"))[0].$this->etcd_base;
-
-			require_once 'HTTP/Request2.php';
-
-			$request = new HTTP_Request2($url, HTTP_Request2::METHOD_GET);
-			$res = $request->send();
-
-			$content = json_decode($res->getBody());
-			$this->host = explode(":", $content->node->nodes[0]->value)[0];
-			$this->port = explode(":", $content->node->nodes[0]->value)[1];
-			apc_add("mysql_host", $this->host, 10);
-			apc_add("mysql_port", $this->port, 10);
-
-			return;
-		}
-
-		/* Finally fall back to environment variables and defaults */
-		$this->host = (getenv("MYSQL_HOST")) ? getenv("MYSQL_HOST") : "localhost";
-		$this->port = (getenv("MYSQL_PORT")) ? getenv("MYSQL_PORT") : "3306";
-
-	}
-
-}
+require_once('ServiceDiscovery.php');
 
 $sd = new ServiceDiscovery();
 
+foreach ($sd->services as $name => $servers) {
+	$i++;
+
+	/* Authentication type */
+	$cfg['Servers'][$i]['auth_type'] = 'cookie';
+
+	/* Server parameters */
+	$cfg['Servers'][$i]['host'] = $servers[0]["host"];
+	$cfg['Servers'][$i]['port'] = $servers[0]["port"];
+	$cfg['Servers'][$i]['verbose'] = $name;
+	$cfg['Servers'][$i]['connect_type'] = 'tcp';
+	$cfg['Servers'][$i]['compress'] = false;
+	$cfg['Servers'][$i]['AllowNoPassword'] = false;
+}
+
+/*
+ * First server
+ */
+// $i++;
+
+/* Authentication type */
+// $cfg['Servers'][$i]['auth_type'] = 'cookie';
+
 /* Server parameters */
-$cfg['Servers'][$i]['host'] = $sd->host;
-$cfg['Servers'][$i]['port'] = $sd->port;
-$cfg['Servers'][$i]['connect_type'] = 'tcp';
-$cfg['Servers'][$i]['compress'] = false;
-$cfg['Servers'][$i]['AllowNoPassword'] = false;
+// $cfg['Servers'][$i]['host'] = $sd->host;
+// $cfg['Servers'][$i]['port'] = $sd->port;
+// $cfg['Servers'][$i]['verbose'] = $sd->name;
+// $cfg['Servers'][$i]['connect_type'] = 'tcp';
+// $cfg['Servers'][$i]['compress'] = false;
+// $cfg['Servers'][$i]['AllowNoPassword'] = false;
 
 /*
  * phpMyAdmin configuration storage settings.

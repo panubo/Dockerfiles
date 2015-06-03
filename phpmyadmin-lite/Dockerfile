@@ -13,6 +13,8 @@ ENV PHPMYADMIN_VERSION 4.4.8
 RUN mkdir -p /var/www/html && \
   curl -L http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/${PHPMYADMIN_VERSION}/phpMyAdmin-${PHPMYADMIN_VERSION}-all-languages.tar.bz2 | tar -C /var/www/html --strip-components 1 -jxf -
 
+ENV SD_SERVICE_NAME "mysql*"
+COPY php-extras /usr/share/php/
 COPY config.inc.php /var/www/html/config.inc.php
 
 # USER has to go at the end
