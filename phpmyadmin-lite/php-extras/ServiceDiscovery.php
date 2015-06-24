@@ -35,6 +35,7 @@ class ServiceDiscovery {
 		foreach ($this->service_list as $service) {
 			$etcd_result = $this->etcd_get($service, "");
 			if ($etcd_result->node->nodes) {
+				$service_results = [];
 				foreach ($etcd_result->node->nodes as $node) {
 					$value = explode(":", $node->value);
 					$service_results[] = array("id" => basename($node->key), "host" => $value[0], "port" => $value[1]);
