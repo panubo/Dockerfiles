@@ -74,7 +74,7 @@ RUN rm -rf /tmp/* /dev/tmp/ /var/tmp/*
 
 # Add Volt Grid .py / .conf
 ADD voltgrid.conf /usr/local/etc/voltgrid.conf
-COPY https://raw.githubusercontent.com/voltgrid/voltgrid-pie/master/voltgrid.py /usr/local/bin/voltgrid.py
+ADD https://raw.githubusercontent.com/voltgrid/voltgrid-pie/master/voltgrid.py /usr/local/bin/voltgrid.py
 RUN chmod 755 /usr/local/bin/voltgrid.py && chmod 644 /usr/local/etc/voltgrid.conf
 
 VOLUME ["/srv/ve27", "/srv/ve32", "/srv/ve33", "/srv/ve34", "/srv/log"]
