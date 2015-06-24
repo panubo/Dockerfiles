@@ -6,9 +6,6 @@
 FROM centos:centos7
 MAINTAINER Andrew Cutler <andrew@voltgrid.com>
 
-# FIX TZ
-RUN cp -a /usr/share/zoneinfo/UTC /etc/localtime
-
 # 1. Update & Install
 # 2. Required for virtualenv bootstrap / install / voltgrid.py
 # 3. Base packages required for compiling popular Python packages
