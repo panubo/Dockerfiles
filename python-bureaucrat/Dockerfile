@@ -1,7 +1,7 @@
 # Volt Grid: Python 2.7, 3.2, 3.3 & 3.4 App w/ Bureaucrat init support
 #
 # Base: centos7
-# Version: 1.1.2
+# Version: 1.2.0
 
 FROM centos:centos7
 MAINTAINER Andrew Cutler <andrew@voltgrid.com>
@@ -30,41 +30,16 @@ RUN mkdir /root/.ssh && \
     mkdir /srv/git && \
     chown root:root /srv/git
 
-# Compile & Install Python 2.7
-RUN export PYTHON27=2.7.8; mkdir -p /dev/tmp && cd /dev/tmp && curl -O https://www.python.org/ftp/python/${PYTHON27}/Python-${PYTHON27}.tgz && tar -xzf Python-${PYTHON27}.tgz && \
-    cd /dev/tmp/Python-${PYTHON27} && ./configure && make -j `nproc` && make install && rm -rf /dev/tmp/Python-2.7.8
-
-# Compile & Install Python 3.2
-RUN export PYTHON32=3.2.5; mkdir -p /dev/tmp && cd /dev/tmp && curl -O https://www.python.org/ftp/python/${PYTHON32}/Python-${PYTHON32}.tgz && tar -xzf Python-${PYTHON32}.tgz && \
-    cd /dev/tmp/Python-${PYTHON32} && ./configure && make -j `nproc` && make install && rm -rf /dev/tmp/Python-${PYTHON32}
-
-# Compile & Install Python 3.3
-RUN export PYTHON33=3.3.5; mkdir -p /dev/tmp && cd /dev/tmp && curl -O https://www.python.org/ftp/python/${PYTHON33}/Python-${PYTHON33}.tgz && tar -xzf Python-${PYTHON33}.tgz && \
-    cd /dev/tmp/Python-${PYTHON33} && ./configure && make -j `nproc` && make install && rm -rf /dev/tmp/Python-${PYTHON33}
-
-# Compile & Install Python 3.4
-RUN export PYTHON34=3.4.1; mkdir -p /dev/tmp && cd /dev/tmp && curl -O https://www.python.org/ftp/python/${PYTHON34}/Python-${PYTHON34}.tgz && tar -xzf Python-${PYTHON34}.tgz && \
-    cd /dev/tmp/Python-${PYTHON34} && ./configure && make -j `nproc`  && make install && rm -rf /dev/tmp/Python-${PYTHON34}
+# Compile & Install Python 2.7 - 3.4 from source
+RUN for PYTHON in 2.7.10 3.2.6 3.3.6 3.4.3; do mkdir -p /dev/tmp && cd /dev/tmp && curl -O https://www.python.org/ftp/python/${PYTHON}/Python-${PYTHON}.tgz && tar -xzf Python-${PYTHON}.tgz && \
+    cd /dev/tmp/Python-${PYTHON} && ./configure && make -j `nproc` && make install && rm -rf /dev/tmp/Python-${PYTHON}; done
 
 USER www
 
+# Create Virtualenv Python 2.7 - 3.4 w/ bureaucrat installed
 ENV BUREAUCRAT git+https://github.com/adlibre/python-bureaucrat.git#egg=bureaucrat
-
-# Create Virtualenv Python 2.7
-RUN cd /srv && export PYTHON_BINARY='/usr/local/bin/python2.7' && \
-    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve27 $BUREAUCRAT MySQL-python
-
-# Create Virtualenv Python 3.2
-RUN cd /srv && export PYTHON_BINARY='/usr/local/bin/python3.2' && \
-    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve32 $BUREAUCRAT mysqlclient
-
-# Create Virtualenv Python 3.3
-RUN cd /srv && export PYTHON_BINARY='/usr/local/bin/python3.3' && \
-    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve33 $BUREAUCRAT mysqlclient
-
-# Create Virtualenv Python 3.4
-RUN cd /srv && export PYTHON_BINARY='/usr/local/bin/python3.4' && \
-    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve34 $BUREAUCRAT mysqlclient
+RUN for PYTHON in 2.7 3.2 3.3 3.4; do cd /srv && export PYTHON_BINARY="/usr/local/bin/python${PYTHON}" && \
+    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve${PYTHON//./} $BUREAUCRAT; done
 
 # Clean up
 USER root
