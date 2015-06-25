@@ -48,25 +48,23 @@ RUN export PYTHON34=3.4.1; mkdir -p /dev/tmp && cd /dev/tmp && curl -O https://w
 
 USER www
 
+ENV BUREAUCRAT git+https://github.com/adlibre/python-bureaucrat.git#egg=bureaucrat
+
 # Create Virtualenv Python 2.7
 RUN cd /srv && export PYTHON_BINARY='/usr/local/bin/python2.7' && \
-    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve27 bureaucrat MySQL-python && \
-    echo 'OLDIFS=$IFS; IFS=$'"'\\n'"'; for l in $(cat /srv/env); do eval export echo $l; done; IFS=$OLDIFS' >> /srv/ve27/bin/activate
+    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve27 $BUREAUCRAT MySQL-python
 
 # Create Virtualenv Python 3.2
 RUN cd /srv && export PYTHON_BINARY='/usr/local/bin/python3.2' && \
-    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve32 bureaucrat mysqlclient && \
-    echo 'OLDIFS=$IFS; IFS=$'"'\\n'"'; for l in $(cat /srv/env); do eval export echo $l; done; IFS=$OLDIFS' >> /srv/ve32/bin/activate
+    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve32 $BUREAUCRAT mysqlclient
 
 # Create Virtualenv Python 3.3
 RUN cd /srv && export PYTHON_BINARY='/usr/local/bin/python3.3' && \
-    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve33 bureaucrat mysqlclient && \
-    echo 'OLDIFS=$IFS; IFS=$'"'\\n'"'; for l in $(cat /srv/env); do eval export echo $l; done; IFS=$OLDIFS' >> /srv/ve33/bin/activate
+    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve33 $BUREAUCRAT mysqlclient
 
 # Create Virtualenv Python 3.4
 RUN cd /srv && export PYTHON_BINARY='/usr/local/bin/python3.4' && \
-    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve34 bureaucrat mysqlclient && \
-    echo 'OLDIFS=$IFS; IFS=$'"'\\n'"'; for l in $(cat /srv/env); do eval export echo $l; done; IFS=$OLDIFS' >> /srv/ve34/bin/activate
+    curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve34 $BUREAUCRAT mysqlclient
 
 # Clean up
 USER root
