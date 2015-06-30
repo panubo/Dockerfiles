@@ -77,7 +77,14 @@ msmtp expects a from address to be set either via this environment variable or
 in the php mail() function. eg. `mail('nobody@example.com', 'the subject', 
 'the message', null, '-fwebmaster@example.com');`
 
+msmtp also need a host to send email via, it does not queue and forward mail
+like postfix or exim. This should be defined via a docker link `--link
+smtp:smtp`
+
 ```
+SMTP_PORT_25_TCP_ADDR = mail
+SMTP_PORT_25_TCP_PORT = 25
+
 msmtp_from = (unset)
 ```
 
