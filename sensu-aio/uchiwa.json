@@ -8,14 +8,13 @@
       "user": "",
       "pass": "",
       "path": "",
-      "timeout": 5000
+      "timeout": 5
     }
   ],
   "uchiwa": {
     "user": "",
     "pass": "",
     "port": 3000,
-    "stats": 10,
-    "refresh": 10000
+    "interval": 5
   }
 }
