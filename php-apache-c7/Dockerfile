@@ -35,7 +35,7 @@ RUN \
   sed -i -e 's/^Listen.*/Listen 8000/g' -e '/^\s*CustomLog/d' /etc/httpd/conf/httpd.conf && \
   sed -i 's/^error_log.*/error_log = \/dev\/stderr/' /etc/php-fpm.conf
 
-RUN curl -L https://github.com/voltgrid/voltgrid-pie/archive/v1.tar.gz | tar -C /usr/local/bin --strip-components 1 -zxf - voltgrid-pie-1/voltgrid.py && \
+RUN curl -L https://github.com/voltgrid/voltgrid-pie/archive/v1.0.1.tar.gz | tar -C /usr/local/bin --strip-components 1 -zxf - voltgrid-pie-1/voltgrid.py && \
   curl -L https://github.com/just-containers/skaware/releases/download/v1.10.0/s6-2.1.3.0-linux-amd64-bin.tar.gz | tar -C / -zxf - && \
   pear install HTTP_Request2
 
