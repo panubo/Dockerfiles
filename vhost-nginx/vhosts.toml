@@ -1,0 +1,10 @@
+[template]
+src = "vhosts.conf.tmpl"
+dest = "/etc/nginx/conf.d/vhosts.conf"
+watch = true
+keys = [
+    "/services/web",
+    "/web",
+]
+check_cmd = "/usr/sbin/nginx -t"
+reload_cmd = "/usr/sbin/nginx -s reload"

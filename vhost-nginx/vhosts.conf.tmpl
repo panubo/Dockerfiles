@@ -1,0 +1,73 @@
+{{/* Creates upstreams for each web service 
+*/}}{{range $dir := lsdir "/services/web"}}
+# Upstream {{base $dir}}
+upstream {{base $dir}} {
+    {{$custdir := printf "/services/web/%s/*" $dir}}{{range gets $custdir}}
+    server {{.Value}} fail_timeout=30s;{{end}}
+}{{end}}
+{{/* Creates servers for each vhost if upstream also exits 
+*/}}{{range $dir := lsdir "/web"}}{{$vhost := base $dir}}
+# Server {{$vhost}}
+server {
+{{range printf "/web/%s/server_name*" $vhost | getvs}}
+  server_name {{.}};{{end}}
+
+  # access_log /var/log/nginx/{{$vhost}}.access.log;
+
+  location / {
+    {{if printf "/web/%s/upstream" $vhost | exists }}{{if printf "/web/%s/upstream" $vhost | getv | printf "/services/web/%s/" | ls | len | lt 0 }}
+    # Use upstream {{$upstream := printf "/web/%s/upstream" $vhost | getv}}{{$upstream}}
+    proxy_pass http://{{$upstream}};
+    {{if printf "/web/%s/proxy_read_timeout" $vhost | exists}}proxy_read_timeout {{printf "/web/%s/proxy_read_timeout" $vhost | getv}};{{end}}
+    {{if printf "/web/%s/client_max_body_size" $vhost | exists}}client_max_body_size {{printf "/web/%s/client_max_body_size" $vhost | getv}};{{end}}
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    {{end}}{{end}}
+    {{if and (printf "/web/%s/upstream" $vhost | exists | not ) (printf "/services/web/%s/" $vhost | ls | len | lt 0 )}}
+    # Use default {{printf "/services/web/%s/" $vhost | ls | len | lt 0 }}
+    proxy_pass http://{{$vhost}};
+    {{if printf "/web/%s/proxy_read_timeout" $vhost | exists}}proxy_read_timeout {{printf "/web/%s/proxy_read_timeout" $vhost | getv}};{{end}}
+    {{if printf "/web/%s/client_max_body_size" $vhost | exists}}client_max_body_size {{printf "/web/%s/client_max_body_size" $vhost | getv}};{{end}}
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    {{end}}
+    {{if printf "/web/%s/upstream" $vhost | exists }}{{if printf "/web/%s/upstream" $vhost | getv | printf "/services/web/%s/" | ls | len | lt 0 | not }}
+    # No upstream
+    {{end}}{{end}}
+    {{if and (printf "/web/%s/upstream" $vhost | exists | not ) (printf "/services/web/%s/" $vhost | ls | len | lt 0 | not )}}
+    # No upstream 2
+    {{end}}
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+  }
+
+  error_page 500 502 503 504 /50x.html;
+  location = /50x.html {
+    root /usr/share/nginx/html;
+  }
+  {{if printf "/web/%s/ssl_certificate" $vhost | exists}}
+  listen                                443 ssl;
+  ssl_certificate                       ssl/{{printf "/web/%s/ssl_certificate" $vhost | getv}};
+  ssl_certificate_key                   ssl/{{printf "/web/%s/ssl_certificate" $vhost | getv}};
+  ssl_ciphers {{if printf "/web/%s/ssl_ciphers" $vhost | exists}}{{printf "/web/%s/ssl_ciphers" $vhost | getv}}{{else}}EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH:EDH+aRSA:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS:!RC4{{end}};
+  ssl_protocols {{if printf "/web/%s/ssl_protocols" $vhost | exists}}{{printf "/web/%s/ssl_protocols" $vhost | getv}}{{else}}TLSv1 TLSv1.1 TLSv1.2{{end}};
+  ssl_prefer_server_ciphers on;
+  ssl_session_cache shared:SSL:10m;
+  {{/* Get this from an ENV var*/}}
+  ssl_dhparam ssl/dhparam.pem;
+  {{if (printf "/web/%s/ssl_only" $vhost | exists) and (printf "/web/%s/ssl_only" $vhost | getv | eq "true")}}
+}
+
+# Server {{$vhost}} - HTTP -> HTTPS Only
+server {
+  {{range printf "/web/%s/server_name*" $vhost | getvs}}
+  server_name {{.}};{{end}}
+  return 301 https://$server_name$request_uri;
+  {{end}}{{end}}
+  listen 80;
+}
+{{end}}
