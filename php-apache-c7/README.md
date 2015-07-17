@@ -31,6 +31,9 @@ httpd_mod_security_enable = (unset)
 httpd_remoteipheader = X-Forwarded-For  
 httpd_remoteipinternalproxy = (unset)
 
+# Subdirectory within the git repository that contains the site root eg 'www'
+httpd_root = (unset)  
+
 # If unset the following is used
 RemoteIPInternalProxy 10.0.0.0/8
 RemoteIPInternalProxy 172.16.0.0/12
@@ -86,6 +89,8 @@ SMTP_PORT_25_TCP_ADDR = mail
 SMTP_PORT_25_TCP_PORT = 25
 
 msmtp_from = (unset)
+msmtp_user = (unset)
+msmtp_pass = (unset)
 ```
 
 ## SSL Offloading
