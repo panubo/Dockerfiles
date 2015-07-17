@@ -85,9 +85,8 @@ like postfix or exim. This should be defined via a docker link `--link
 smtp:smtp`
 
 ```
-SMTP_PORT_25_TCP_ADDR = mail
-SMTP_PORT_25_TCP_PORT = 25
-
+msmtp_host = SMTP_PORT_25_TCP_ADDR or mail
+msmtp_port = SMTP_PORT_25_TCP_PORT or 25
 msmtp_from = (unset)
 msmtp_user = (unset)
 msmtp_pass = (unset)
