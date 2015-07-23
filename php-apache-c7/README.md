@@ -31,6 +31,9 @@ httpd_mod_security_enable = (unset)
 httpd_remoteipheader = X-Forwarded-For  
 httpd_remoteipinternalproxy = (unset)
 
+# Subdirectory within the git repository that contains the site root eg 'www'
+httpd_root = (unset)  
+
 # If unset the following is used
 RemoteIPInternalProxy 10.0.0.0/8
 RemoteIPInternalProxy 172.16.0.0/12
@@ -77,8 +80,16 @@ msmtp expects a from address to be set either via this environment variable or
 in the php mail() function. eg. `mail('nobody@example.com', 'the subject', 
 'the message', null, '-fwebmaster@example.com');`
 
+msmtp also need a host to send email via, it does not queue and forward mail
+like postfix or exim. This should be defined via a docker link `--link
+smtp:smtp`
+
 ```
+msmtp_host = SMTP_PORT_25_TCP_ADDR or mail
+msmtp_port = SMTP_PORT_25_TCP_PORT or 25
 msmtp_from = (unset)
+msmtp_user = (unset)
+msmtp_pass = (unset)
 ```
 
 ## SSL Offloading

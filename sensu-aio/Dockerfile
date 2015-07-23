@@ -7,7 +7,7 @@ RUN cp -a /usr/share/zoneinfo/UTC /etc/localtime; \
 ADD sensu.repo /etc/yum.repos.d/sensu.repo
 RUN \
   yum -q -y install epel-release; \
-  yum -q -y install erlang redis sensu supervisor uchiwa; \
+  yum -q -y install erlang redis sensu supervisor uchiwa initscripts; \
   yum -q -y clean all
 
 RUN rpm --import http://www.rabbitmq.com/rabbitmq-signing-key-public.asc; \
@@ -36,6 +36,7 @@ ADD supervisord.ini /etc/supervisord.d/supervisord.ini
 ADD config.json /etc/sensu/config.json
 ADD client.json /etc/sensu/conf.d/client.json
 ADD checks.json /etc/sensu/conf.d/checks.json
+ADD uchiwa.json /etc/sensu/uchiwa.json
 
 # Rabbitmq
 EXPOSE 5672
