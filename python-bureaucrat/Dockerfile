@@ -43,7 +43,10 @@ RUN for PYTHON in 2.7 3.2 3.3 3.4; do cd /srv && export PYTHON_BINARY="/usr/loca
 
 # Clean up
 USER root
-RUN rm -rf /tmp/* /dev/tmp/ /var/tmp/*
+RUN rm -rf /tmp/* /dev/tmp/ /var/tmp/* && \
+    # Remove links to indefinite Python versions (also prevents os Python from being overriden by accident)
+    find /usr/local/bin/ -type l -exec rm {} \; && \
+    rm -rf /var/cache/yum/*
 
 # Add Volt Grid .py / .conf
 ADD voltgrid.conf /usr/local/etc/voltgrid.conf
