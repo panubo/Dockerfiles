@@ -21,7 +21,7 @@ populate /var/lib/bind /data/lib
 populate /var/cache/bind /data/cache
 
 # Generate RNDC Key
-[ ! -f "/data/etc/rndc.key" ] && rndc-confgen -b 512 -r /dev/urandom -a
+[ ! -f "/data/etc/rndc.key" ] && rndc-confgen -b 512 -r /dev/urandom -a && chown bind:bind /data/etc/rndc.key && chmod 640 /data/etc/rndc.key
 
 # Make daemon dirs
 mkdir -m 0775 -p /var/run/named
