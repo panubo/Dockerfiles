@@ -15,4 +15,4 @@ ADD entry.sh /
 RUN chmod +x /entry.sh
 
 ENTRYPOINT ["/entry.sh"]
-CMD ["/usr/sbin/named", "-c", "/data/etc/named.conf", "-u", "bind", "-g"]
+CMD ["/usr/sbin/named", "-4", "-c", "/data/etc/named.conf", "-u", "bind", "-g"]
