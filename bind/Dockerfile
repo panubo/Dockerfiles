@@ -7,7 +7,7 @@ EXPOSE 53/tcp
 VOLUME ["/data"]
 
 RUN apt-get update && \
-    apt-get install -y bind9 dnsutils && \
+    apt-get install -y bind9 dnsutils vim && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
