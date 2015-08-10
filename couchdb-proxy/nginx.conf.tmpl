@@ -22,6 +22,8 @@ server {
   proxy_set_header Host $host;
   proxy_set_header X-Forwarded-For $remote_addr;
   proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header Authorization $http_authorization;
+  proxy_pass_header Authorization;
 
   # Client verification
   ssl_client_certificate /etc/nginx/conf.d/ssl/ca.pem;
