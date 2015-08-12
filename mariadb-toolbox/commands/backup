@@ -1,0 +1,26 @@
+#!/usr/bin/env bash 
+
+set -e -o pipefail
+
+MYCONN="--user=${MYSQL_USER} --password=${MYSQL_PASS} --host=${MYSQL_HOST-localhost} --port=${MYSQL_PORT-3306}"
+MYSQL="mysql ${MYCONN}"
+GZIP="gzip --fast"
+MYDUMP="mysqldump ${MYCONN}"
+BACKUP_PATH="${BACKUP_DIR}/$(date +%Y%m%d%H%M)"
+DATABASES=$($MYSQL -rs -e "SHOW DATABASES" | grep -v -E '(information_schema|performance_schema)')
+RETENTION_DAYS=${RETENTION_DAYS-14}
+
+# Perform the backup
+mkdir -p "$BACKUP_PATH"
+echo -n "Dumping..."
+for DB in $DATABASES; do
+    echo -n " $DB"
+    $MYDUMP --opt --single-transaction --flush-logs --events --databases ${DB} | gzip > "${BACKUP_PATH}/${DB}.sql.gz"
+done
+echo ". Done."
+
+# Delete expired backups
+echo -n "Cleanup... "
+find ${BACKUP_DIR} -name "*.sql.gz" -mtime +$RETENTION_DAYS -exec rm -f {} \; 
+find ${BACKUP_DIR} -type d -empty -delete
+echo "Done."
