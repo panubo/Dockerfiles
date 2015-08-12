@@ -1,5 +1,7 @@
 # CouchDB
 
+CouchDB Dockerfile based on CentOS 7.
+
 ## Use
 
 If `COUCHDB_DATABASE` is specified then an empty database will be created when the volume is initialised.

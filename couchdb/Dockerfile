@@ -7,10 +7,9 @@ MAINTAINER Andrew Cutler <andrew@panubo.com>
 
 RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
     yum -y install epel-release && \
-    #rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 && \
     yum -q -y update && \
     yum -y install couchdb && \
-    yum clean all
+    yum clean all && rm -rf /var/cache/yum/*
 
 # Configure CouchDB
 RUN sed -e 's/^;bind_address = .*$/bind_address = 0.0.0.0/' -i /etc/couchdb/local.ini
