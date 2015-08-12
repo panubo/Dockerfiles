@@ -1,0 +1,9 @@
+[template]
+src = "nginx.conf.tmpl"
+dest = "/etc/nginx/conf.d/nginx.conf"
+watch = true
+keys = [
+    "/services/dnscouch"
+]
+check_cmd = "/usr/sbin/nginx -t"
+reload_cmd = "/usr/sbin/nginx -s reload"
