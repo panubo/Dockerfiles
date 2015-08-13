@@ -7,7 +7,7 @@ if [ -z "$BACKUP_DIR" ]; then
     exit 128
 fi
 
-MYCONN="--user=${MYSQL_USER-root} --password=${MYSQL_PASS-${MYSQL_ENV_MYSQL_ROOT_PASSWORD}} --host=${MYSQL_HOST-${MYSQL_PORT_3306_TCP_ADDR-localhost}} --port=${MYSQL_PORT-${MYSQL_PORT_3306_TCP_PORT-3306}}"
+MYCONN="--user=${MYSQL_USER-root} --password=${MYSQL_PASS-${MYSQL_ENV_MYSQL_ROOT_PASSWORD}} --host=${MYSQL_HOST-${MYSQL_PORT_3306_TCP_ADDR-localhost}} --port=${MYSQL_PORT_3306_TCP_PORT-${MYSQL_PORT-3306}}"
 MYSQL="mysql ${MYCONN}"
 GZIP="gzip --fast"
 MYDUMP="mysqldump ${MYCONN}"
