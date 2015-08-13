@@ -2,7 +2,12 @@
 
 set -e -o pipefail
 
-MYCONN="--user=${MYSQL_USER} --password=${MYSQL_PASS} --host=${MYSQL_HOST-localhost} --port=${MYSQL_PORT-3306}"
+if [ -z "$BACKUP_DIR" ]; then
+    echo "BACKUP_DIR not set"
+    exit 128
+fi
+
+MYCONN="--user=${MYSQL_USER-root} --password=${MYSQL_PASS-${MYSQL_ENV_MYSQL_ROOT_PASSWORD}} --host=${MYSQL_HOST-${MYSQL_PORT_3306_TCP_ADDR-localhost}} --port=${MYSQL_PORT-${MYSQL_PORT_3306_TCP_PORT-3306}}"
 MYSQL="mysql ${MYCONN}"
 GZIP="gzip --fast"
 MYDUMP="mysqldump ${MYCONN}"
