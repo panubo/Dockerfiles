@@ -20,7 +20,7 @@ mkdir -p "$BACKUP_PATH"
 echo -n "Dumping..."
 for DB in $DATABASES; do
     echo -n " $DB"
-    $MYDUMP --opt --single-transaction --flush-logs --events --databases ${DB} | gzip > "${BACKUP_PATH}/${DB}.sql.gz"
+    $MYDUMP --opt --single-transaction --flush-logs --events --databases ${DB} | $GZIP > "${BACKUP_PATH}/${DB}.sql.gz"
 done
 echo ". Done."
 
