@@ -37,7 +37,7 @@ RUN for PYTHON in 2.7.10 3.2.6 3.3.6 3.4.3; do mkdir -p /dev/tmp && cd /dev/tmp 
 USER www
 
 # Create Virtualenv Python 2.7 - 3.4 w/ bureaucrat installed
-ENV BUREAUCRAT git+https://github.com/adlibre/python-bureaucrat.git#egg=bureaucrat
+ENV ENV_OPTS='--no-site-packages --distribute --no-wheel' BUREAUCRAT=git+https://github.com/adlibre/python-bureaucrat.git#egg=bureaucrat
 RUN for PYTHON in 2.7 3.2 3.3 3.4; do cd /srv && export PYTHON_BINARY="/usr/local/bin/python${PYTHON}" && \
     curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve${PYTHON//./} $BUREAUCRAT; done
 
