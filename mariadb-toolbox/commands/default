@@ -11,7 +11,7 @@ cat << EOF
 
      docker-maria-create-users
 
-     convert_to_innodb <databases>
+     convert-to-innodb <databases>
 
      import
 
