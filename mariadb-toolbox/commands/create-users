@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e -o pipefail
+set -e
 
 if [ "$1" == '--no-create-database' ]; then
     shift;
@@ -30,7 +30,7 @@ genpasswd() {
     export LC_CTYPE=C  # Quiet tr warnings
     local l=$1
     [ "$l" == "" ] && l=16
-    strings < /dev/urandom | tr -dc A-Za-z0-9_ | head -c ${l} | xargs
+    strings < /dev/urandom | tr -dc A-Za-z0-9_ | head -c ${l}
 }
 
 if [ "$CREATE_DB" == 'true' ]; then
