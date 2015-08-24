@@ -1,8 +1,6 @@
-# MariaDB Import Dumps
+# Import Dumps
 
-[![Docker Repository on Quay.io](https://quay.io/repository/macropin/maria-import/status "Docker Repository on Quay.io")](https://quay.io/repository/macropin/maria-import)
-
-Docker container to import MySQL / MariaDB dumps.
+Command to import MySQL / MariaDB dumps.
 
 ## Configuration
 
