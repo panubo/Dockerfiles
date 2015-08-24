@@ -9,6 +9,8 @@ cat << EOF
 
      backup
 
+     docker-maria-create-users
+
      convert_to_innodb <databases>
 
 EOF

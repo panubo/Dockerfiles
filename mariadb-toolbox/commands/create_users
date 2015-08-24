@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -e -o pipefail
+
+if [ "$1" == '--create-database' ]; then
+    shift;
+    CREATE_DB=true
+fi
+
+if [ -z "${DATABASE_HOST}" ]; then
+    echo -n "=> Using Docker Links for configuration "
+    DATABASE_PASS=$MARIADB_ENV_MYSQL_ROOT_PASSWORD
+    DATABASE_USER=root
+    DATABASE_HOST=$MARIADB_PORT_3306_TCP_ADDR
+    DATABASE_PORT=$MARIADB_PORT_3306_TCP_PORT
+    echo "mysql://${DATABASE_HOST}:$DATABASE_PORT"
+else
+    echo -n  "=> Using variables for configuration "
+    DATABASE_HOST=${DATABASE_HOST-localhost}
+    DATABASE_PORT=${DATABASE_PORT-3306}
+    echo "mysql://${DATABASE_HOST}:$DATABASE_PORT"
+fi
+
+USERS=$@
+MYSQL="mysql --host=${DATABASE_HOST} --port=${DATABASE_PORT} --user=${DATABASE_USER} --password=${DATABASE_PASS}"
+
+genpasswd() {
+    export LC_CTYPE=C  # Quiet tr warnings
+    local l=$1
+    [ "$l" == "" ] && l=16
+    strings < /dev/urandom | tr -dc A-Za-z0-9_ | head -c ${l} | xargs
+}
+
+if [ "$CREATE_DB" == 'true' ]; then
+    echo ">>> Creating users and databases: $USERS..."
+else
+    echo ">>> Creating users: $USERS..."
+fi
+
+for NAME in $USERS; do
+   PASSWORD=$(genpasswd)
+   if [ "$CREATE_DB" == 'true' ]; then
+       echo "CREATE DATABASE IF NOT EXISTS ${NAME};" | $MYSQL
+   fi
+   echo "GRANT ALL ON ${NAME}.* to ${NAME}@'%' IDENTIFIED BY '$PASSWORD';" | $MYSQL
+   echo "${NAME} / ${PASSWORD}"
+done
+
+echo "FLUSH PRIVILEGES;" | $MYSQL
+echo ">>> Finished."
