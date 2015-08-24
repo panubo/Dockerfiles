@@ -2,8 +2,10 @@
 
 set -e -o pipefail
 
-if [ "$1" == '--create-database' ]; then
+if [ "$1" == '--no-create-database' ]; then
     shift;
+    CREATE_DB=false
+else
     CREATE_DB=true
 fi
 

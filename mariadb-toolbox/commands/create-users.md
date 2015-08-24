@@ -15,14 +15,14 @@ Or alternatively specify the individual variables:
 
 ### Options
 
-- `--create-database` create databases
+- `--no-create-database` don't create databases
 
 ## Example Usage
 
 Create `foo`, `bar` and `baz` users with full privileges to a database with the same name:
 
-```docker run --rm -i -t -e DATABASE_HOST=172.19.66.4 -e DATABASE_USER=root -e DATABASE_PASS=foo quay.io/macropin/maria-create-users /run.sh foo bar baz```
+```docker run --rm -i -t -e DATABASE_HOST=172.19.66.4 -e DATABASE_USER=root -e DATABASE_PASS=foo quay.io/panubo/mariadb-toolbox create-users foo bar baz```
 
 Using Docker links to `mariadb` container:
 
-```docker run --rm -i -t --link mariadb:mariadb quay.io/macropin/maria-create-users /run.sh foo bar baz```
+```docker run --rm -i -t --link mariadb:mariadb quay.io/panubo/mariadb-toolbox create-users foo bar baz```
