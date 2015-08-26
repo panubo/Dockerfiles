@@ -9,7 +9,7 @@ cat << EOF
 
      backup
 
-     create-users
+     create-user
 
      convert-to-innodb <databases>
 

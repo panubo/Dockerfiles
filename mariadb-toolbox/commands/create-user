@@ -2,11 +2,23 @@
 
 set -e
 
+genpasswd() {
+    export LC_CTYPE=C  # Quiet tr warnings
+    local l=$1
+    [ "$l" == "" ] && l=16
+    strings < /dev/urandom | tr -dc A-Za-z0-9_ | head -c ${l}
+}
+
 if [ "$1" == '--no-create-database' ]; then
     shift;
     CREATE_DB=false
 else
     CREATE_DB=true
+fi
+
+if [ -z "$1" ]; then
+    echo "User not specified"
+    exit 128
 fi
 
 if [ -z "${DATABASE_HOST}" ]; then
@@ -23,30 +35,20 @@ else
     echo "mysql://${DATABASE_HOST}:$DATABASE_PORT"
 fi
 
-USERS=$@
+USER=$1
+PASS=${2-$(genpasswd 8)}
 MYSQL="mysql --host=${DATABASE_HOST} --port=${DATABASE_PORT} --user=${DATABASE_USER} --password=${DATABASE_PASS}"
 
-genpasswd() {
-    export LC_CTYPE=C  # Quiet tr warnings
-    local l=$1
-    [ "$l" == "" ] && l=16
-    strings < /dev/urandom | tr -dc A-Za-z0-9_ | head -c ${l}
-}
-
 if [ "$CREATE_DB" == 'true' ]; then
-    echo ">>> Creating users and databases: $USERS..."
+    echo ">>> Creating user and database: $USER..."
 else
-    echo ">>> Creating users: $USERS..."
+    echo ">>> Creating user: $USER..."
 fi
 
-for NAME in $USERS; do
-   PASSWORD=$(genpasswd)
-   if [ "$CREATE_DB" == 'true' ]; then
-       echo "CREATE DATABASE IF NOT EXISTS ${NAME};" | $MYSQL
-   fi
-   echo "GRANT ALL ON ${NAME}.* to ${NAME}@'%' IDENTIFIED BY '$PASSWORD';" | $MYSQL
-   echo "${NAME} / ${PASSWORD}"
-done
-
+if [ "$CREATE_DB" == 'true' ]; then
+    echo "CREATE DATABASE IF NOT EXISTS ${NAME};" | $MYSQL
+fi
+echo "GRANT ALL ON ${USER}.* to ${USER}@'%' IDENTIFIED BY '$PASS';" | $MYSQL
+echo "Created: ${USER} / ${PASS}"
 echo "FLUSH PRIVILEGES;" | $MYSQL
 echo ">>> Finished."
