@@ -1,4 +1,4 @@
-## VSFTPD Docker Image
+# VSFTPD Docker Image
 
 This is a micro-service image for VSFTPD.
 
@@ -22,7 +22,7 @@ The following environment variables are accepted.
 requires a hashed password such as the ones created with `mkpasswd -m sha-512`
 which is in the _whois_ debian package.
 
-# Usage Example
+## Usage Example
 
 ```
 docker run --rm -it -p 21:21 -p 4559:4559 -p 4560:4560 -p 4561:4561 -p 4562:4562 -p 4563:4563 -p 4564:4564 -e FTP_USER=panubo -e FTP_PASSWORD=panubo panubo/vsftpd
