@@ -2,6 +2,8 @@
 
 set -e
 
+[ "$DEBUG" == 'true' ] && set -x
+
 DB=/etc/vsftpd/virtual-users.db
 
 if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
