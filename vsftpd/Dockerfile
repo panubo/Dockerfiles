@@ -1,4 +1,4 @@
-FROM debian
+FROM debian:jessie
 
 RUN groupadd -g 48 ftp && \
     useradd --no-create-home --home-dir /srv -s /bin/false --uid 48 --gid 48 -c 'ftp daemon' ftp
