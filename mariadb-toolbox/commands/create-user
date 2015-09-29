@@ -46,7 +46,7 @@ else
 fi
 
 if [ "$CREATE_DB" == 'true' ]; then
-    echo "CREATE DATABASE IF NOT EXISTS ${NAME};" | $MYSQL
+    echo "CREATE DATABASE IF NOT EXISTS ${$USER};" | $MYSQL
 fi
 echo "GRANT ALL ON ${USER}.* to ${USER}@'%' IDENTIFIED BY '$PASS';" | $MYSQL
 echo "Created: ${USER} / ${PASS}"
