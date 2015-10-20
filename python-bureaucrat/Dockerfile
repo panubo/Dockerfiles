@@ -40,7 +40,7 @@ USER www
 ENV ENV_OPTS='--no-site-packages --distribute --no-wheel' BUREAUCRAT=git+https://github.com/adlibre/python-bureaucrat.git#egg=bureaucrat
 RUN for PYTHON in 2.7 3.2 3.3 3.4; do cd /srv && export PYTHON_BINARY="/usr/local/bin/python${PYTHON}" && \
     curl --silent https://raw.githubusercontent.com/adlibre/python-bootstrap/master/bootstrap.sh | bash -s ve${PYTHON//./} $BUREAUCRAT && \
-    echo 'OLDIFS=$IFS; IFS=$'"'\\n'"'; for l in $(cat /srv/env); do eval export echo $l; done; IFS=$OLDIFS' >> /srv/ve${PYTHON//./}/bin/activate; done
+    echo 'OLDIFS=$IFS; IFS=$'"'\\n'"'; for l in $(cat /srv/env); do eval export echo '"'$l'"'; done; IFS=$OLDIFS' >> /srv/ve${PYTHON//./}/bin/activate; done
 
 # Clean up
 USER root
