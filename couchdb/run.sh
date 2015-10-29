@@ -3,6 +3,7 @@
 echo "=== Run CouchDB ==="
 
 VOLUME_DB="/var/lib/couchdb"
+export COUCHDB_URL=${COUCHDB_URL-http://127.0.0.1:5984/}
 
 if [ -n "$(ls -A ${VOLUME_DB})" ]; then
     echo "=> Using an existing volume in $VOLUME_DB"
