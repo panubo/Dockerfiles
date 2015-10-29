@@ -16,7 +16,7 @@ else
 fi
 
 # Create a user if we don't have any admins, in the case that /etc/couchdb is not retained between restarts
-if [ -n "${COUCHDB_USER}" ] && [ -n "${COUCHDB_PASS}" ] && [ $(curl ${COUCHDB_URL}_config/admins/) == "{}" ]; then
+if [ -n "${COUCHDB_USER}" ] && [ -n "${COUCHDB_PASS}" ] && [ "$(curl ${COUCHDB_URL}_config/admins/ > /dev/null)" == "{}" ]; then
     echo -n "=> Creating CouchDB Admin User: \"${COUCHDB_USER}\". "
     curl -X PUT ${COUCHDB_URL}_config/admins/${COUCHDB_USER} -d \"${COUCHDB_PASS}\" > /dev/null 2>&1
     if [[ $? -ne 0 ]]; then
