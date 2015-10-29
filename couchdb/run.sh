@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+[ "$DEBUG" == 'true' ] && set -x
+
 echo "=== Run CouchDB ==="
 
 VOLUME_DB="/var/lib/couchdb"
