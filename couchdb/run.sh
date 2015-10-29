@@ -18,19 +18,6 @@ else
     fi
 fi
 
-# Create a user if we don't have any admins, in the case that /etc/couchdb is not retained between restarts
-if [ -n "${COUCHDB_USER}" ] && [ -n "${COUCHDB_PASS}" ] && [ "$(curl -s ${COUCHDB_URL}_config/admins/)" == "{}" ]; then
-    echo -n "=> Creating CouchDB Admin User: \"${COUCHDB_USER}\". "
-    curl -X PUT ${COUCHDB_URL}_config/admins/${COUCHDB_USER} -d \"${COUCHDB_PASS}\" > /dev/null 2>&1
-    if [[ $? -ne 0 ]]; then
-        echo "Error."
-        exit 128
-    else
-        echo "Done."
-    fi
-fi
-
-
 function couchdb_stop {
   echo "Received SIGINT or SIGTERM. Shutting down CouchDB"
   # Get PID
@@ -47,5 +34,17 @@ trap couchdb_stop SIGINT SIGTERM
 
 echo "=> Starting CouchDB"
 /usr/local/bin/voltgrid.py /usr/libexec/couchdb +Bd -noinput -sasl errlog_type error +K true +A 4 -couch_ini /etc/couchdb/default.ini /etc/couchdb/default.d/ /etc/couchdb/local.d/ /etc/couchdb/local.ini -s couch -pidfile /var/run/couchdb/couchdb.pid &
+
+# Create a user if we don't have any admins, in the case that /etc/couchdb is not retained between restarts
+if [ -n "${COUCHDB_USER}" ] && [ -n "${COUCHDB_PASS}" ] && [ "$(curl -s ${COUCHDB_URL}_config/admins/)" == "{}" ]; then
+    echo -n "=> Creating CouchDB Admin User: \"${COUCHDB_USER}\". "
+    curl -X PUT ${COUCHDB_URL}_config/admins/${COUCHDB_USER} -d \"${COUCHDB_PASS}\" > /dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
+        echo "Error."
+        exit 128
+    else
+        echo "Done."
+    fi
+fi
 
 sleep infinity && exit $?
