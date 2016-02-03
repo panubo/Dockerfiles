@@ -1,3 +1,7 @@
+# Note
+
+This is the "old" version that requires etcd. New version here https://github.com/panubo/docker-couchdb-proxy.
+
 ## CouchDB Proxy
 
 Simply a Nginx reverse proxy for CouchDB. Provides the ability to encrypt communications and use client certificate authentication.
