@@ -15,9 +15,9 @@ ENV POST_MAX_SIZE 10M
 RUN sed -i 's/^upload_max_filesize.*/upload_max_filesize = ${UPLOAD_MAX_FILESIZE}/' /etc/php5/cli/php.ini && \
   sed -i 's/^post_max_size.*/post_max_size = ${POST_MAX_SIZE}/' /etc/php5/cli/php.ini
 
-ENV PHPMYADMIN_VERSION 4.4.10
+ENV PHPMYADMIN_VERSION 4.4.15.4
 RUN mkdir -p /var/www/html && \
-  curl -L http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/${PHPMYADMIN_VERSION}/phpMyAdmin-${PHPMYADMIN_VERSION}-all-languages.tar.bz2 | tar -C /var/www/html --strip-components 1 -jxf -
+  curl -L https://files.phpmyadmin.net/phpMyAdmin/${PHPMYADMIN_VERSION}/phpMyAdmin-${PHPMYADMIN_VERSION}-all-languages.tar.bz2 | tar -C /var/www/html --strip-components 1 -jxf -
 
 ENV SD_SERVICE_NAME "mysql*"
 COPY php-extras /usr/share/php/
